@@ -32,7 +32,7 @@ public class GestureDetector : MonoBehaviour
         CreateDirrectory();
         ReadData();
         
-        Saver.instance.text.text += "Path " + Application.persistentDataPath;
+        Saver.instance.textMessage.text += "Path " + Application.persistentDataPath;
     }
 
     // Update is called once per frame
@@ -134,8 +134,8 @@ public class GestureDetector : MonoBehaviour
     void ReadData()
     {
         string[] files = Directory.GetFiles(Application.persistentDataPath + "/test");
-        
-        Debug.Log("Read data" + files.Length);
+
+        Saver.instance.textMessage.text += "Read data " + files.Length;
 
         for (int i = 0; i < files.Length; i++)
         {
@@ -153,18 +153,19 @@ public class GestureDetector : MonoBehaviour
             // Determine whether the directory exists.
             if (Directory.Exists(path))
             {
-                Debug.Log("That path exists already.");
+                Saver.instance.textMessage.text += "That path exists already";
                 return;
             }
 
             // Try to create the directory.
             DirectoryInfo di = Directory.CreateDirectory(path);
-            Debug.Log("The directory was created successfully");
+            Saver.instance.textMessage.text += "The directory was created successfully";
             
         }
         catch (System.Exception e)
         {
-            Debug.Log(e.Message);
+            Saver.instance.textMessage.text += e.Message;
+            Saver.instance.textMessage.text += e;
         }
         finally { }
     }

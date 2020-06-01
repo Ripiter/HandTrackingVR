@@ -8,6 +8,7 @@ public class Saver : MonoBehaviour
     bool saved = false;
     float timeLeft = 5.0f;
     public TextMeshProUGUI text;
+    public TextMeshProUGUI textMessage;
     public GestureDetector gestureDetector;
 
     public static Saver instance = null;
