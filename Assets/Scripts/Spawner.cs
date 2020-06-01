@@ -13,7 +13,22 @@ public class Spawner : MonoBehaviour
 
     public void SpawnObject()
     {
-        Instantiate(spawnObj, transform.position, Quaternion.identity);
+        GameObject topSecret = Instantiate(spawnObj, transform.position, Quaternion.identity);
+
+        if(topSecret.GetComponentInChildren<ParticleSystem>() != null)
+        {
+            ParticleSystem[] secretChildren = topSecret.GetComponentsInChildren<ParticleSystem>();
+
+            for (int i = 0; i < secretChildren.Length; i++)
+            {
+                if(secretChildren[i].isPlaying == false)
+                {
+                    secretChildren[i].Play();
+                }
+            }
+
+        }
+
     }
 
     // Update is called once per frame
