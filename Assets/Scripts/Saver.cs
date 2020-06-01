@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class Saver : MonoBehaviour
 {
-    bool saved = false;
-    float timeLeft = 5.0f;
+    float timeCount;
+    float startTimeCounter = 35.0f;
     public TextMeshProUGUI text;
     public TextMeshProUGUI textMessage;
     public GestureDetector gestureDetector;
@@ -34,17 +34,17 @@ public class Saver : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        timeCount = startTimeCounter;
     }
 
     // Update is called once per frame
     void Update()
     {
-        timeLeft -= Time.deltaTime;
-        text.text = "Time til save: " + timeLeft;
-        if (timeLeft < 0 && saved == false)
+        timeCount -= Time.deltaTime;
+        text.text = "Time til save: " + timeCount;
+        if (timeCount < 0)
         {
-            saved = true;
+            timeCount = startTimeCounter;
             gestureDetector.Save();
         }
     }
