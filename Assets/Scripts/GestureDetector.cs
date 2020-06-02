@@ -21,7 +21,7 @@ public class GestureDetector : MonoBehaviour
     List<OVRBone> fingerBones;
     private Gesture previousGesture;
 
-    
+    int counter = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -29,10 +29,10 @@ public class GestureDetector : MonoBehaviour
         fingerBones = new List<OVRBone>(skeleton.Bones);
         previousGesture = new Gesture();
 
-        CreateDirrectory();
-        ReadData();
+        //CreateDirrectory();
+        //ReadData();
         
-        Saver.instance.textMessage.text += "Path " + Application.persistentDataPath;
+        //Saver.instance.textMessage.text += "Path " + Application.persistentDataPath;
     }
 
     // Update is called once per frame
@@ -46,12 +46,20 @@ public class GestureDetector : MonoBehaviour
         Gesture currectGesture = Recognize();
         bool hasRecognized = !currectGesture.Equals(new Gesture());
 
-        if(hasRecognized && !currectGesture.Equals(previousGesture))
+        if (hasRecognized && !currectGesture.Equals(previousGesture))
         {
             Debug.Log("New gesture found" + currectGesture.name);
             previousGesture = currectGesture;
             currectGesture.onRecognized.Invoke();
         }
+        //if (hasRecognized)
+        //{
+        //    Debug.Log("New gesture found" + currectGesture.name);
+        //    previousGesture = currectGesture;
+        //    currectGesture.onRecognized.Invoke();
+        //}
+
+
     }
 
 
@@ -59,7 +67,7 @@ public class GestureDetector : MonoBehaviour
     {
         Debug.Log("Save");
         Gesture g = new Gesture();
-        g.name = "Gesture" + System.Guid.NewGuid().GetHashCode();
+        g.name = "Gesture" + counter;
         List<Vector3> data = new List<Vector3>();
 
         foreach (OVRBone bone in fingerBones)
@@ -69,7 +77,8 @@ public class GestureDetector : MonoBehaviour
 
         g.fingerDatas = data;
         gestures.Add(g);
-        SaveGesture();
+        SaveGesture(g, g.name);
+        counter++;
     }
 
     public Gesture Recognize()
@@ -105,6 +114,7 @@ public class GestureDetector : MonoBehaviour
         return currectGesture;
     }
 
+    // May not be usefull 
     List<Gesture> GetGestureList()
     {
         if (gestures.Count == 0)
@@ -113,15 +123,18 @@ public class GestureDetector : MonoBehaviour
             return gestures;
     }
 
-    void SaveGesture()
+    void SaveGesture(Gesture gesture, string name)
     {
-        for (int i = 0; i < gestures.Count; i++)
-        {
-            string path = Application.persistentDataPath + "/test/" + gestures[i].name + ".json";
-            string jsonString = JsonUtility.ToJson(gestures[i]);
-            File.WriteAllText(path, jsonString);
-        }
+        //for (int i = 0; i < gestures.Count; i++)
+        //{
+        //    string path = Application.persistentDataPath + "/test/" + gestures[i].name + ".json";
+        //    string jsonString = JsonUtility.ToJson(gestures[i]);
+        //    File.WriteAllText(path, jsonString);
+        //}
 
+        string path = Application.persistentDataPath + "/test/" + name + ".json";
+        string jsonString = JsonUtility.ToJson(gesture);
+        File.WriteAllText(path, jsonString);
 
 
         //// Read a file  
@@ -133,9 +146,10 @@ public class GestureDetector : MonoBehaviour
 
     void ReadData()
     {
-        string[] files = Directory.GetFiles(Application.persistentDataPath + "/test");
+        //string[] files = Directory.GetFiles(Application.persistentDataPath + "/test");
+        string[] files = Directory.GetFiles(@"C:\handtrackingfiles");
 
-        Saver.instance.textMessage.text += "Read data " + files.Length;
+        Saver.instance.textMessage.text += "\nRead data " + files.Length;
 
         for (int i = 0; i < files.Length; i++)
         {
@@ -153,13 +167,13 @@ public class GestureDetector : MonoBehaviour
             // Determine whether the directory exists.
             if (Directory.Exists(path))
             {
-                Saver.instance.textMessage.text += "That path exists already";
+                Saver.instance.textMessage.text += "\nThat path exists already";
                 return;
             }
 
             // Try to create the directory.
             DirectoryInfo di = Directory.CreateDirectory(path);
-            Saver.instance.textMessage.text += "The directory was created successfully";
+            Saver.instance.textMessage.text += "\nThe directory was created successfully";
             
         }
         catch (System.Exception e)

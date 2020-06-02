@@ -45,7 +45,7 @@ public class Saver : MonoBehaviour
         if (timeCount < 0)
         {
             timeCount = startTimeCounter;
-            gestureDetector.Save();
+            //gestureDetector.Save();
         }
     }
 }

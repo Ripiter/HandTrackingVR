@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Spawner : MonoBehaviour
 {
+    //public GameObject[] spawnObjArray;
     public GameObject spawnObj;
     // Start is called before the first frame update
     void Start()
@@ -13,8 +14,10 @@ public class Spawner : MonoBehaviour
 
     public void SpawnObject()
     {
-        GameObject topSecret = Instantiate(spawnObj, transform.position, Quaternion.identity);
+        //GameObject spawnObj = spawnObjArray[Random.Range(0, spawnObjArray.Length)];
 
+        GameObject topSecret = Instantiate(spawnObj, transform.position, Quaternion.identity, transform);
+        Saver.instance.textMessage.text += "\n Spawned";
         if(topSecret.GetComponentInChildren<ParticleSystem>() != null)
         {
             ParticleSystem[] secretChildren = topSecret.GetComponentsInChildren<ParticleSystem>();

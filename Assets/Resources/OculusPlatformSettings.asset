@@ -9,13 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 05d394ae2a81edd4cbc3c51917e766e3, type: 3}
-  m_Name: OculusProjectConfig
+  m_Script: {fileID: 11500000, guid: b3d881e962d099f4a8eb492ef7e9a8c0, type: 3}
+  m_Name: OculusPlatformSettings
   m_EditorClassIdentifier: 
-  targetDeviceTypes: 01000000
-  handTrackingSupport: 1
-  disableBackups: 1
-  enableNSCConfig: 1
-  securityXmlPath: 
-  skipUnneededShaders: 0
-  focusAware: 1
+  ovrAppID: 3653962584620310
+  ovrMobileAppID: 3653962584620310
+  ovrUseStandalonePlatform: 0
