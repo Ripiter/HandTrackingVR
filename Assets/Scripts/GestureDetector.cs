@@ -4,11 +4,19 @@ using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+
 [System.Serializable]
 public struct Gesture
 {
     public string name;
     public List<Vector3> fingerDatas;
+}
+
+[System.Serializable]
+public struct Moves
+{
+    public string MoveName;
+    public List<Gesture> gestures;
     public UnityEvent onRecognized;
 }
 
@@ -21,7 +29,11 @@ public class GestureDetector : MonoBehaviour
     List<OVRBone> fingerBones;
     private Gesture previousGesture;
 
+    public List<Moves> moves;
+    public List<Gesture> currectMove;
+
     int counter = 0;
+    bool couting = false;
 
     // Start is called before the first frame update
     void Start()
@@ -31,7 +43,7 @@ public class GestureDetector : MonoBehaviour
 
         //CreateDirrectory();
         //ReadData();
-        
+
         //Saver.instance.textMessage.text += "Path " + Application.persistentDataPath;
     }
 
@@ -46,11 +58,29 @@ public class GestureDetector : MonoBehaviour
         Gesture currectGesture = Recognize();
         bool hasRecognized = !currectGesture.Equals(new Gesture());
 
-        if (hasRecognized && !currectGesture.Equals(previousGesture))
+        //if (hasRecognized && !currectGesture.Equals(previousGesture))
+        //{
+        //    Debug.Log("New gesture found" + currectGesture.name);
+        //    previousGesture = currectGesture;
+        //    currectGesture.onRecognized.Invoke();
+        //}
+        if (hasRecognized)
         {
-            Debug.Log("New gesture found" + currectGesture.name);
-            previousGesture = currectGesture;
-            currectGesture.onRecognized.Invoke();
+            for (int i = 0; i < moves.Count; i++)
+            {
+                if(moves[i].gestures.Contains(currectGesture) && !currectMove.Contains(currectGesture))
+                {
+                    currectMove.Add(currectGesture);
+                    if(couting == false)
+                    {
+                        couting = true;
+                        StartCoroutine(CountDown());
+                    }
+                    CheckForMove();
+                }
+            }
+
+            //currectGesture.onRecognized.Invoke();
         }
         //if (hasRecognized)
         //{
@@ -61,7 +91,42 @@ public class GestureDetector : MonoBehaviour
 
 
     }
+    IEnumerator CountDown()
+    {
+        int time = 5;
+        while (time > 0)
+        {
+            Saver.instance.timeForMove.text = time + "Seconds till reset";
+            yield return new WaitForSeconds(1f);
+            time--;
+        }
 
+        currectMove.Clear();
+        couting = false;
+    }
+
+    void CheckForMove()
+    {
+        Moves checkingMove;
+        for (int i = 0; i < moves.Count; i++)
+        {
+            if (moves[i].gestures.Count > currectMove.Count)
+                continue;
+
+            checkingMove = moves[i];
+
+            for (int j = 0; j < currectMove.Count; j++)
+            {
+                Gesture temp = moves[i].gestures[j];
+                if (!currectMove.Contains(moves[i].gestures[j]))
+                {
+                    break;
+                }
+            }
+
+            checkingMove.onRecognized.Invoke();
+        }
+    }
 
     public void Save()
     {
