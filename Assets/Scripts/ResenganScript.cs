@@ -2,7 +2,7 @@
 
 public class ResenganScript : MonoBehaviour
 {
-    public float magnitude = 1000;
+    public float magnitude = 300;
     // Start is called before the first frame update
     void Start()
     {
@@ -26,7 +26,7 @@ public class ResenganScript : MonoBehaviour
 
             other.gameObject.transform.GetComponent<Rigidbody>().freezeRotation = false;
 
-            other.gameObject.GetComponent<Rigidbody>().AddForce(force * magnitude);
+            other.gameObject.GetComponent<Rigidbody>().AddForce(force * magnitude * other.gameObject.GetComponent<EnemyScript>().speed);
             other.gameObject.transform.Rotate(rotation.rotation * Time.deltaTime * 30, Space.Self);
 
             other.gameObject.GetComponent<EnemyScript>().hit = true;

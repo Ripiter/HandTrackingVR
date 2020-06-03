@@ -6,7 +6,7 @@ using UnityEngine;
 public class Saver : MonoBehaviour
 {
     float timeCount;
-    float startTimeCounter = 35.0f;
+    float startTimeCounter = 15.0f;
     public TextMeshProUGUI text;
     public TextMeshProUGUI textMessage;
     public TextMeshProUGUI timeForMove;
@@ -41,12 +41,13 @@ public class Saver : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        timeCount -= Time.deltaTime;
-        text.text = "Time til save: " + timeCount;
-        if (timeCount < 0)
-        {
-            timeCount = startTimeCounter;
-            //gestureDetector.Save();
-        }
+        //timeCount -= Time.deltaTime;
+        //text.text = "Time til save: " + timeCount;
+        //if (timeCount < 0)
+        //{
+        //    timeCount = startTimeCounter;
+        //    gestureDetector.Save();
+        //    Saver.instance.textMessage.text = "SAved";
+        //}
     }
 }

@@ -22,8 +22,7 @@ public class EnemyScript : MonoBehaviour
     {
         if (Vector3.Distance(transform.position, player.transform.position) > 0.3f)
         {
-
-            // Move our position a step closer to the target.
+            transform.LookAt(transform.position -  player.transform.position);
             float step = speed * Time.deltaTime; // calculate distance to move
             transform.position = Vector3.MoveTowards(transform.position, player.transform.position, step);
             //transform.LookAt(player.transform.position,Vector3.up);

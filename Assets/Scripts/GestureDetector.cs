@@ -1,15 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 
 [System.Serializable]
-public struct Gesture
+public class Gesture
 {
     public string name;
     public List<Vector3> fingerDatas;
+    public UnityEvent onRecognized;
 }
 
 [System.Serializable]
@@ -30,7 +30,7 @@ public class GestureDetector : MonoBehaviour
     private Gesture previousGesture;
 
     public List<Moves> moves;
-    public List<Gesture> currectMove;
+    public List<string> currectMove;
 
     int counter = 0;
     bool couting = false;
@@ -42,19 +42,28 @@ public class GestureDetector : MonoBehaviour
         previousGesture = new Gesture();
 
         //CreateDirrectory();
-        //ReadData();
+        // Remember to set moves before loading
+        ReadData();
 
-        //Saver.instance.textMessage.text += "Path " + Application.persistentDataPath;
+        
+
+        //moves[0].gestures[0].fingerDatas = gestures[0].fingerDatas;
+        //moves[0].gestures[1].fingerDatas = gestures[1].fingerDatas;
+        //moves[0].gestures[2].fingerDatas = gestures[2].fingerDatas;
+
+
+
+        //moves[1].gestures[0].fingerDatas = gestures[3].fingerDatas;
+        //moves[1].gestures[1].fingerDatas = gestures[4].fingerDatas;
+        //moves[1].gestures[2].fingerDatas = gestures[5].fingerDatas;
+
+
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (debugMode && Input.GetKeyDown(KeyCode.Space))
-        {
-            Save();
-        }
-
         Gesture currectGesture = Recognize();
         bool hasRecognized = !currectGesture.Equals(new Gesture());
 
@@ -63,76 +72,91 @@ public class GestureDetector : MonoBehaviour
         //    Debug.Log("New gesture found" + currectGesture.name);
         //    previousGesture = currectGesture;
         //    currectGesture.onRecognized.Invoke();
+        //    if(couting == false)
+        //        StartCoroutine(CountDown());
         //}
+
+
         if (hasRecognized)
         {
             for (int i = 0; i < moves.Count; i++)
             {
-                if(moves[i].gestures.Contains(currectGesture) && !currectMove.Contains(currectGesture))
+                for (int j = 0; j < moves[i].gestures.Count; j++)
                 {
-                    currectMove.Add(currectGesture);
-                    if(couting == false)
+                    if (moves[i].gestures[j].name == currectGesture.name)
                     {
-                        couting = true;
-                        StartCoroutine(CountDown());
+                        Saver.instance.textMessage.text = "Currect gesture name " + currectGesture.name + " count " + currectMove.Count;
+                        if (!currectMove.Contains(currectGesture.name))
+                        {
+
+                            currectMove.Add(currectGesture.name);
+
+                            if (couting == false)
+                            {
+                                couting = true;
+                                StartCoroutine(CountDown());
+                            }
+                            CheckForMove();
+                        }
                     }
-                    CheckForMove();
                 }
             }
 
-            //currectGesture.onRecognized.Invoke();
         }
-        //if (hasRecognized)
-        //{
-        //    Debug.Log("New gesture found" + currectGesture.name);
-        //    previousGesture = currectGesture;
-        //    currectGesture.onRecognized.Invoke();
-        //}
 
 
     }
     IEnumerator CountDown()
     {
         int time = 5;
-        while (time > 0)
+        while (time > -1)
         {
-            Saver.instance.timeForMove.text = time + "Seconds till reset";
+            Saver.instance.timeForMove.text = time + " Seconds till reset";
             yield return new WaitForSeconds(1f);
             time--;
         }
 
+        Saver.instance.timeForMove.text = "Too late";
         currectMove.Clear();
         couting = false;
     }
 
+    // If this doesnt change it to check for text
+    // and make currectmove to have a list of strings instead
     void CheckForMove()
     {
         Moves checkingMove;
+        bool found = true;
         for (int i = 0; i < moves.Count; i++)
         {
             if (moves[i].gestures.Count > currectMove.Count)
                 continue;
 
+            found = true;
             checkingMove = moves[i];
 
-            for (int j = 0; j < currectMove.Count; j++)
+            for (int j = 0; j < moves[i].gestures.Count; j++)
             {
                 Gesture temp = moves[i].gestures[j];
-                if (!currectMove.Contains(moves[i].gestures[j]))
+                if (!currectMove.Contains(temp.name))
                 {
-                    break;
+                    found = false;
                 }
             }
 
-            checkingMove.onRecognized.Invoke();
+            if (found)
+            {
+                checkingMove.onRecognized.Invoke();
+                currectMove.Clear();
+            }
+
         }
     }
 
     public void Save()
     {
-        Debug.Log("Save");
         Gesture g = new Gesture();
-        g.name = "Gesture" + counter;
+        g.name = "Gesture" + counter + skeleton.gameObject.tag;
         List<Vector3> data = new List<Vector3>();
 
         foreach (OVRBone bone in fingerBones)
@@ -141,7 +165,7 @@ public class GestureDetector : MonoBehaviour
         }
 
         g.fingerDatas = data;
-        gestures.Add(g);
+        //gestures.Add(g);
         SaveGesture(g, g.name);
         counter++;
     }
@@ -160,7 +184,7 @@ public class GestureDetector : MonoBehaviour
             {
                 Vector3 currectData = skeleton.transform.InverseTransformPoint(fingerBones[i].Transform.position);
                 float distance = Vector3.Distance(currectData, gesture.fingerDatas[i]);
-                if(distance > threshold)
+                if (distance > threshold)
                 {
                     isDiscarded = true;
                     break;
@@ -169,7 +193,7 @@ public class GestureDetector : MonoBehaviour
                 sumDistance += distance;
             }
 
-            if(!isDiscarded && sumDistance < currentMin)
+            if (!isDiscarded && sumDistance < currentMin)
             {
                 currentMin = sumDistance;
                 currectGesture = gesture;
@@ -218,10 +242,26 @@ public class GestureDetector : MonoBehaviour
 
         for (int i = 0; i < files.Length; i++)
         {
-            string readText = File.ReadAllText(files[i]);
-            Gesture tempGesture = JsonUtility.FromJson<Gesture>(readText);
-            gestures.Add(tempGesture);
+            if (files[i].Contains(skeleton.gameObject.tag))
+            {
+                string readText = File.ReadAllText(files[i]);
+                Gesture tempGesture = JsonUtility.FromJson<Gesture>(readText);
+                gestures.Add(tempGesture);
+            }
         }
+
+
+        int gesturesRead = 0;
+
+        for (int i = 0; i < moves.Count; i++)
+        {
+            for (int j = 0; j < moves[i].gestures.Count; j++)
+            {
+                moves[i].gestures[j] = gestures[gesturesRead];
+                gesturesRead++;
+            }
+        }
+
     }
 
     void CreateDirrectory()
@@ -239,7 +279,7 @@ public class GestureDetector : MonoBehaviour
             // Try to create the directory.
             DirectoryInfo di = Directory.CreateDirectory(path);
             Saver.instance.textMessage.text += "\nThe directory was created successfully";
-            
+
         }
         catch (System.Exception e)
         {
