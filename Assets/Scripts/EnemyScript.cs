@@ -15,14 +15,14 @@ public class EnemyScript : MonoBehaviour
     void Update()
     {
         if (hit == false)
-            Move();       
+            Move();
     }
 
     void Move()
     {
         if (Vector3.Distance(transform.position, player.transform.position) > 0.3f)
         {
-            transform.LookAt(transform.position -  player.transform.position);
+            transform.LookAt(transform.position - player.transform.position);
             float step = speed * Time.deltaTime; // calculate distance to move
             transform.position = Vector3.MoveTowards(transform.position, player.transform.position, step);
             //transform.LookAt(player.transform.position,Vector3.up);
@@ -30,5 +30,18 @@ public class EnemyScript : MonoBehaviour
 
 
         }
+    }
+
+
+    private void OnParticleCollision(GameObject other)
+    {
+        Vector3 force = transform.position - other.transform.position;
+
+        force.Normalize();
+        
+        gameObject.GetComponent<Rigidbody>().freezeRotation = false;
+        gameObject.GetComponent<Rigidbody>().AddForce(force * 10 * speed);
+
+        hit = true;
     }
 }

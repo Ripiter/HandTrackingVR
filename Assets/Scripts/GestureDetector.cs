@@ -31,6 +31,7 @@ public class GestureDetector : MonoBehaviour
 
     public List<Moves> moves;
     public List<string> currectMove;
+    public Moves CurrectMove;
 
     int counter = 0;
     bool couting = false;
@@ -43,7 +44,9 @@ public class GestureDetector : MonoBehaviour
 
         //CreateDirrectory();
         // Remember to set moves before loading
-        ReadData();
+        
+        
+        //ReadData();
 
         
 
@@ -125,7 +128,6 @@ public class GestureDetector : MonoBehaviour
     // and make currectmove to have a list of strings instead
     void CheckForMove()
     {
-        Moves checkingMove;
         bool found = true;
         for (int i = 0; i < moves.Count; i++)
         {
@@ -133,7 +135,6 @@ public class GestureDetector : MonoBehaviour
                 continue;
 
             found = true;
-            checkingMove = moves[i];
 
             for (int j = 0; j < moves[i].gestures.Count; j++)
             {
@@ -146,7 +147,8 @@ public class GestureDetector : MonoBehaviour
 
             if (found)
             {
-                checkingMove.onRecognized.Invoke();
+                CurrectMove = moves[i];
+                CurrectMove.onRecognized.Invoke();
                 currectMove.Clear();
             }
 
