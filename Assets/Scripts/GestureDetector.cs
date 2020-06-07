@@ -5,6 +5,9 @@ using UnityEngine;
 using UnityEngine.Events;
 
 [System.Serializable]
+public class myInheritedEvent : UnityEvent<GameObject> { }
+
+[System.Serializable]
 public class Gesture
 {
     public string name;
@@ -17,7 +20,8 @@ public struct Moves
 {
     public string MoveName;
     public List<Gesture> gestures;
-    public UnityEvent onRecognized;
+    public myInheritedEvent onRecognized;
+    public GameObject spawnObj;
 }
 
 public class GestureDetector : MonoBehaviour
@@ -30,8 +34,7 @@ public class GestureDetector : MonoBehaviour
     private Gesture previousGesture;
 
     public List<Moves> moves;
-    public List<string> currectMove;
-    public Moves CurrectMove;
+    public List<string> CurrentMovesMade;
 
     int counter = 0;
     bool couting = false;
@@ -88,11 +91,11 @@ public class GestureDetector : MonoBehaviour
                 {
                     if (moves[i].gestures[j].name == currectGesture.name)
                     {
-                        Saver.instance.textMessage.text = "Currect gesture name " + currectGesture.name + " count " + currectMove.Count;
-                        if (!currectMove.Contains(currectGesture.name))
+                        Saver.instance.textMessage.text = "Currect gesture name " + currectGesture.name + " count " + CurrentMovesMade.Count;
+                        if (!CurrentMovesMade.Contains(currectGesture.name))
                         {
 
-                            currectMove.Add(currectGesture.name);
+                            CurrentMovesMade.Add(currectGesture.name);
 
                             if (couting == false)
                             {
@@ -120,7 +123,7 @@ public class GestureDetector : MonoBehaviour
         }
 
         Saver.instance.timeForMove.text = "Too late";
-        currectMove.Clear();
+        CurrentMovesMade.Clear();
         couting = false;
     }
 
@@ -131,7 +134,7 @@ public class GestureDetector : MonoBehaviour
         bool found = true;
         for (int i = 0; i < moves.Count; i++)
         {
-            if (moves[i].gestures.Count > currectMove.Count)
+            if (moves[i].gestures.Count > CurrentMovesMade.Count)
                 continue;
 
             found = true;
@@ -139,7 +142,7 @@ public class GestureDetector : MonoBehaviour
             for (int j = 0; j < moves[i].gestures.Count; j++)
             {
                 Gesture temp = moves[i].gestures[j];
-                if (!currectMove.Contains(temp.name))
+                if (!CurrentMovesMade.Contains(temp.name))
                 {
                     found = false;
                 }
@@ -147,9 +150,8 @@ public class GestureDetector : MonoBehaviour
 
             if (found)
             {
-                CurrectMove = moves[i];
-                CurrectMove.onRecognized.Invoke();
-                currectMove.Clear();
+                moves[i].onRecognized.Invoke(moves[i].spawnObj);
+                CurrentMovesMade.Clear();
             }
 
         }

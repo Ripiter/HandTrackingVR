@@ -5,7 +5,7 @@ using UnityEngine;
 public class Spawner : MonoBehaviour
 {
     //public GameObject[] spawnObjArray;
-    public GameObject spawnObj;
+    //public GameObject spawnObj;
 
     GameObject spawnedObj = null;
 
@@ -15,14 +15,15 @@ public class Spawner : MonoBehaviour
         
     }
 
-    public void SpawnObject()
+    public void SpawnObject(GameObject _spawnObj)
     {
         //GameObject spawnObj = spawnObjArray[Random.Range(0, spawnObjArray.Length)];
 
-        if (spawnedObj != null)
+        if (_spawnObj == spawnedObj)
             Destroy(spawnedObj);
 
-        spawnedObj = Instantiate(spawnObj, transform.position, Quaternion.identity, transform);
+
+        spawnedObj = Instantiate(_spawnObj, transform.position, Quaternion.identity, transform);
         Saver.instance.textMessage.text += "\n Spawned";
     }
 
